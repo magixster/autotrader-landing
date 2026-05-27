@@ -175,7 +175,11 @@ export default function Hero() {
             >
               Master in-demand trading automation skills with production-grade 
               Pine Script strategies, multi-platform execution, and professional-grade 
-              risk management — all deployed through Docker.
+              risk management — all deployed through Docker. Backed by{' '}
+              <strong style={{ color: 'var(--accent-primary)' }}>29 months</strong> of live results
+              across <strong style={{ color: 'var(--accent-primary)' }}>7 assets</strong> with a{' '}
+              <strong style={{ color: 'var(--accent-primary)' }}>63% win rate</strong> and{' '}
+              <strong style={{ color: 'var(--accent-primary)' }}>4.2 Sharpe</strong>.
             </p>
 
             {/* CTA */}
@@ -229,9 +233,10 @@ export default function Hero() {
             {/* Stats */}
             <div className="animate-fade-in-up flex flex-wrap gap-x-10 gap-y-3 mt-14" style={{ animationDelay: '0.35s' }}>
               {[
-                { value: '226+', label: 'Tests Passing' },
-                { value: '2', label: 'Platforms Supported' },
-                { value: 'Docker', label: 'One-Click Deploy' },
+                { value: '63%', label: 'Win Rate (BTC)' },
+                { value: '4.2', label: 'Sharpe Ratio' },
+                { value: '2.55', label: 'Profit Factor' },
+                { value: '29', label: 'Months Live' },
               ].map((stat) => (
                 <div key={stat.label}>
                   <div className="text-xl md:text-2xl font-black tracking-tight" style={{ color: 'var(--accent-primary)' }}>
