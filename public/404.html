@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+  <title>Redirecting — AutoTrader</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: #0a0a1a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    /* Glow */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+    }
+    .glow-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,212,170,0.1), transparent);
+      top: -150px; right: -150px;
+    }
+    .glow-2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(59,130,246,0.08), transparent);
+      bottom: -100px; left: -100px;
+    }
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 480px;
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .code {
+      font-size: 6rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #00d4aa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .desc {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .spinner {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .spinner-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00d4aa;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    /* Candlestick decoration */
+    .candles {
+      position: fixed;
+      right: 40px;
+      bottom: 40px;
+      opacity: 0.04;
+      pointer-events: none;
+    }
+    @media (max-width: 640px) {
+      .code { font-size: 4rem; }
+      .title { font-size: 1.2rem; }
+      .candles { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <!-- Candlestick decoration -->
+  <svg class="candles" width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="40" width="12" height="140" rx="2" fill="#00d4aa"/>
+    <line x1="16" y1="40" x2="16" y2="25" stroke="#00d4aa" stroke-width="2"/>
+    <line x1="16" y1="180" x2="16" y2="195" stroke="#00d4aa" stroke-width="2"/>
+    <rect x="40" y="70" width="12" height="100" rx="2" fill="#ef4444"/>
+    <line x1="46" y1="70" x2="46" y2="55" stroke="#ef4444" stroke-width="2"/>
+    <line x1="46" y1="170" x2="46" y2="185" stroke="#ef4444" stroke-width="2"/>
+    <rect x="70" y="30" width="12" height="160" rx="2" fill="#00d4aa"/>
+    <line x1="76" y1="30" x2="76" y2="15" stroke="#00d4aa" stroke-width="2"/>
+    <line x1="76" y1="190" x2="76" y2="205" stroke="#00d4aa" stroke-width="2"/>
+    <rect x="100" y="90" width="12" height="70" rx="2" fill="#ef4444"/>
+    <line x1="106" y1="90" x2="106" y2="75" stroke="#ef4444" stroke-width="2"/>
+    <line x1="106" y1="160" x2="106" y2="175" stroke="#ef4444" stroke-width="2"/>
+    <rect x="130" y="20" width="12" height="180" rx="2" fill="#00d4aa"/>
+    <line x1="136" y1="20" x2="136" y2="5" stroke="#00d4aa" stroke-width="2"/>
+    <line x1="136" y1="200" x2="136" y2="215" stroke="#00d4aa" stroke-width="2"/>
+    <rect x="160" y="60" width="12" height="110" rx="2" fill="#ef4444"/>
+    <line x1="166" y1="60" x2="166" y2="45" stroke="#ef4444" stroke-width="2"/>
+    <line x1="166" y1="170" x2="166" y2="185" stroke="#ef4444" stroke-width="2"/>
+  </svg>
+
+  <div class="card">
+    <div class="code">404</div>
+    <h1 class="title">Page Not Found</h1>
+    <p class="desc">
+      This page doesn&rsquo;t exist or the link may be broken.
+      Redirecting you to the main application&hellip;
+    </p>
+    <div class="spinner">
+      <div class="spinner-dot"></div>
+      Taking you to AutoTrader
+    </div>
+  </div>
+
+  <script>
+    // ── GitHub Pages SPA Redirect ──
+    // When GitHub Pages can't find a route, it serves this 404.html.
+    // We save the original path and redirect to index.html.
+    // The React app reads sessionStorage.redirect on mount and navigates accordingly.
+
+    (function() {
+      var path = location.pathname;
+      var search = location.search;
+      var hash = location.hash;
+
+      // Store the original path for the SPA to consume
+      sessionStorage.setItem('autotrader_redirect', path + search + hash);
+
+      // Redirect to the SPA root
+      window.location.replace('/autotrader-landing/');
+    })();
+  </script>
+</body>
+</html>
