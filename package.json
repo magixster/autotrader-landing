@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "preview:prod": "npm run build && npm run preview"
+    "preview:prod": "GITHUB_ACTIONS=true npm run build && npm run preview"
   },
   "dependencies": {
     "lucide-react": "^1.16.0",
