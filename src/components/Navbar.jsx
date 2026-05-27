@@ -188,6 +188,27 @@ export default function Navbar() {
           opacity: mobileOpen ? 1 : 0,
         }}
       >
+        {/* Close button at top-right of overlay */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="absolute top-5 right-5 flex items-center justify-center w-10 h-10 rounded-lg cursor-pointer transition-all duration-200 z-10"
+          style={{
+            color: 'rgba(236, 239, 244, 0.9)',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(12px)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.color = '#5ed29c';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            e.currentTarget.style.color = 'var(--text-primary)';
+          }}
+          aria-label="Close navigation menu"
+        >
+          <X size={24} />
+        </button>
         <div className="flex flex-col items-center justify-center h-full gap-10 px-6">
           {NAV_ITEMS.map((item, i) => (
             <a
