@@ -1,16 +1,10 @@
 import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { useTheme } from './context/ThemeContext';
-import Navbar from './components/Navbar';
-import Ticker from './components/Ticker';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import HowItWorks from './components/HowItWorks';
-import Platforms from './components/Platforms';
-import PricingTable from './components/PricingTable';
-import PerformanceResults from './components/PerformanceResults';
-import Testimonials from './components/Testimonials';
-import ContactForm from './components/ContactForm';
-import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import PerformancePage from './pages/PerformancePage';
+import PricingPage from './pages/PricingPage';
+import PineSignalsPage from './pages/PineSignalsPage';
 
 export default function App() {
   const { isDark } = useTheme();
@@ -48,19 +42,12 @@ export default function App() {
         color: 'var(--text-primary)',
       }}
     >
-      <Navbar />
-      <Ticker />
-      <div className="pt-[calc(var(--navbar-height)+36px)]">
-        <Hero />
-        <Features />
-        <HowItWorks />
-        <Platforms />
-        <PerformanceResults />
-        <PricingTable />
-        <Testimonials />
-        <ContactForm />
-        <Footer />
-      </div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/performance" element={<PerformancePage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/pine-signals" element={<PineSignalsPage />} />
+      </Routes>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { HERO_STATS } from '../data/hero';
 
 /* ── Fullscreen Video Background ── */
 function VideoBackground() {
@@ -232,12 +233,7 @@ export default function Hero() {
 
             {/* Stats */}
             <div className="animate-fade-in-up flex flex-wrap gap-x-10 gap-y-3 mt-14" style={{ animationDelay: '0.35s' }}>
-              {[
-                { value: '63%', label: 'Win Rate (BTC)' },
-                { value: '4.2', label: 'Sharpe Ratio' },
-                { value: '2.55', label: 'Profit Factor' },
-                { value: '29', label: 'Months Live' },
-              ].map((stat) => (
+              {HERO_STATS.map((stat) => (
                 <div key={stat.label}>
                   <div className="text-xl md:text-2xl font-black tracking-tight" style={{ color: 'var(--accent-primary)' }}>
                     {stat.value}

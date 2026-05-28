@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
-
-const SUBJECTS = [
-  'General Inquiry',
-  'Support Request',
-  'Partnership Opportunity',
-  'Enterprise Sales',
-  'Bug Report',
-  'Feature Request',
-];
+import { SUBJECTS } from '../data/contactForm';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({

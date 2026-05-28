@@ -60,6 +60,7 @@ export default {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
         'slide-up': 'slideUp 0.6s ease-out forwards',
         'grid-flow': 'gridFlow 20s linear infinite',
+        'shimmer': 'shimmer 3s ease-in-out infinite',
       },
       keyframes: {
         ticker: {
@@ -85,6 +86,10 @@ export default {
         gridFlow: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-60px)' },
+        },
+        shimmer: {
+          '0%, 100%': { backgroundPosition: '200% 0' },
+          '50%': { backgroundPosition: '-200% 0' },
         },
       },
     },

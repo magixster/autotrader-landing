@@ -1,19 +1,15 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Menu, X } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Testimonials', href: '#testimonials' },
-  { label: 'Contact', href: '#contact' },
-];
+import { NAV_ITEMS } from '../data/navbar';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,6 +22,45 @@ export default function Navbar() {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  const scrollToSection = (sectionId) => {
+    // Wait for DOM to render after navigation, then attempt scroll
+    const tryScroll = (attempts = 0) => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      } else if (attempts < 10) {
+        setTimeout(() => tryScroll(attempts + 1), 100);
+      }
+    };
+    tryScroll();
+  };
+
+  const handleNavClick = (item) => {
+    setMobileOpen(false);
+
+    if (item.route === '/pricing') {
+      navigate('/pricing');
+      return;
+    }
+
+    if (location.pathname === '/') {
+      scrollToSection(item.section);
+    } else {
+      navigate('/');
+      scrollToSection(item.section);
+    }
+  };
+
+  const handleGetStarted = () => {
+    setMobileOpen(false);
+    if (location.pathname === '/') {
+      scrollToSection('get-started');
+    } else {
+      navigate('/');
+      scrollToSection('get-started');
+    }
+  };
 
   return (
     <>
@@ -41,7 +76,7 @@ export default function Navbar() {
       >
         <div className="container h-full flex items-center justify-between">
           {/* Minimalist Logo */}
-          <a href="#" className="flex items-center gap-2.5 no-underline group">
+          <Link to="/" className="flex items-center gap-2.5 no-underline group">
             <div
               className="flex items-center justify-center w-8 h-8 rounded-[8px] text-sm font-extrabold text-white transition-transform duration-300 group-hover:scale-105"
               style={{ background: 'var(--gradient-primary)' }}
@@ -51,15 +86,15 @@ export default function Navbar() {
             <span className="text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
               <span style={{ color: 'var(--accent-primary)' }}>Auto</span>Trader
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
             {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="text-sm font-medium no-underline tracking-wide transition-all duration-200 relative py-1"
+              <button
+                key={item.label}
+                onClick={() => handleNavClick(item)}
+                className="text-sm font-medium no-underline tracking-wide transition-all duration-200 relative py-1 cursor-pointer bg-transparent border-none"
                 style={{ color: 'var(--text-secondary)' }}
                 onMouseEnter={(e) => {
                   e.target.style.color = 'var(--accent-primary)';
@@ -69,7 +104,7 @@ export default function Navbar() {
                 }}
               >
                 {item.label}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -112,9 +147,9 @@ export default function Navbar() {
               )}
             </button>
 
-            <a
-              href="#get-started"
-              className="btn !rounded-full !px-6 !py-2.5 !text-sm !font-bold uppercase tracking-wider"
+            <button
+              onClick={handleGetStarted}
+              className="btn !rounded-full !px-6 !py-2.5 !text-sm !font-bold uppercase tracking-wider cursor-pointer"
               style={{
                 background: 'var(--accent-primary)',
                 color: '#070b0a',
@@ -134,7 +169,7 @@ export default function Navbar() {
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
-            </a>
+            </button>
           </div>
 
           {/* Mobile: Theme + Hamburger */}
@@ -211,10 +246,10 @@ export default function Navbar() {
         </button>
         <div className="flex flex-col items-center justify-center h-full gap-10 px-6">
           {NAV_ITEMS.map((item, i) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-2xl font-bold no-underline transition-all duration-300"
+            <button
+              key={item.label}
+              onClick={() => handleNavClick(item)}
+              className="text-2xl font-bold no-underline transition-all duration-300 bg-transparent border-none cursor-pointer"
               style={{
                 color: mobileOpen ? 'var(--text-primary)' : 'transparent',
                 opacity: mobileOpen ? 1 : 0,
@@ -222,17 +257,16 @@ export default function Navbar() {
                 transition: `all 0.4s ease ${0.1 + i * 0.05}s`,
                 letterSpacing: '0.02em',
               }}
-              onClick={() => setMobileOpen(false)}
               onMouseEnter={(e) => (e.target.style.color = 'var(--accent-primary)')}
               onMouseLeave={(e) => (e.target.style.color = 'var(--text-primary)')}
             >
               {item.label}
-            </a>
+            </button>
           ))}
 
-          <a
-            href="#get-started"
-            className="btn !rounded-full !px-8 !py-3.5 !text-sm !font-bold uppercase tracking-wider mt-4"
+          <button
+            onClick={handleGetStarted}
+            className="btn !rounded-full !px-8 !py-3.5 !text-sm !font-bold uppercase tracking-wider mt-4 cursor-pointer"
             style={{
               opacity: mobileOpen ? 1 : 0,
               transform: mobileOpen ? 'translateY(0)' : 'translateY(20px)',
@@ -241,14 +275,13 @@ export default function Navbar() {
               color: '#070b0a',
               boxShadow: '0 4px 24px rgba(94, 210, 156, 0.25)',
             }}
-            onClick={() => setMobileOpen(false)}
           >
             Get Started
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </button>
 
           {/* Decorative glow in mobile menu */}
           <div
