@@ -40,10 +40,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Build static site
-        env:
-            GITHUB_ACTIONS: true  # 👈 Explicitly inject the variable here
         run: npm run build
+
+      - name: Verify build output
+        run: |
+          if grep -q '/autotrader-landing/assets/' dist/index.html; then
+            echo "✅ Build output has correct base path"
+          else
+            echo "❌ Build output missing base path prefix"
+            exit 1
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
