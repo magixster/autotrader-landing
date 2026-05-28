@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS } from '../data/navbar';
+import { scrollToElement } from '../utils/scrollTo';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,31 +25,36 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   const scrollToSection = (sectionId) => {
-    // Wait for DOM to render after navigation, then attempt scroll
-    const tryScroll = (attempts = 0) => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else if (attempts < 10) {
-        setTimeout(() => tryScroll(attempts + 1), 100);
-      }
-    };
-    tryScroll();
+    scrollToElement(sectionId);
+  };
+
+  // Determine active page for nav indicator
+  const isActive = (item) => {
+    const path = location.pathname;
+    if (item.route === '/') {
+      // For home sections, active when on home page
+      return path === '/';
+    }
+    return path === item.route;
   };
 
   const handleNavClick = (item) => {
     setMobileOpen(false);
 
-    if (item.route === '/pricing') {
-      navigate('/pricing');
+    // If the item has a different route, navigate to it
+    if (item.route !== '/') {
+      navigate(item.route);
       return;
     }
 
-    if (location.pathname === '/') {
-      scrollToSection(item.section);
-    } else {
-      navigate('/');
-      scrollToSection(item.section);
+    // Otherwise scroll to a section on the current page or navigate home first
+    if (item.section) {
+      if (location.pathname === '/') {
+        scrollToSection(item.section);
+      } else {
+        navigate('/');
+        scrollToSection(item.section);
+      }
     }
   };
 
@@ -90,22 +96,39 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleNavClick(item)}
-                className="text-sm font-medium no-underline tracking-wide transition-all duration-200 relative py-1 cursor-pointer bg-transparent border-none"
-                style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = 'var(--accent-primary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color = 'var(--text-secondary)';
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item);
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => handleNavClick(item)}
+                  className="text-sm font-medium no-underline tracking-wide transition-all duration-200 relative py-1 cursor-pointer bg-transparent border-none"
+                  style={{
+                    color: active ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = 'var(--accent-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) e.target.style.color = 'var(--text-secondary)';
+                  }}
+                >
+                  {item.label}
+                  {/* Active indicator dot */}
+                  {active && (
+                    <div
+                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full transition-all duration-300"
+                      style={{
+                        width: 4,
+                        height: 4,
+                        background: 'var(--accent-primary)',
+                        boxShadow: '0 0 6px var(--accent-primary)',
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Desktop Right */}
@@ -245,24 +268,46 @@ export default function Navbar() {
           <X size={24} />
         </button>
         <div className="flex flex-col items-center justify-center h-full gap-10 px-6">
-          {NAV_ITEMS.map((item, i) => (
-            <button
-              key={item.label}
-              onClick={() => handleNavClick(item)}
-              className="text-2xl font-bold no-underline transition-all duration-300 bg-transparent border-none cursor-pointer"
-              style={{
-                color: mobileOpen ? 'var(--text-primary)' : 'transparent',
-                opacity: mobileOpen ? 1 : 0,
-                transform: mobileOpen ? 'translateY(0)' : 'translateY(20px)',
-                transition: `all 0.4s ease ${0.1 + i * 0.05}s`,
-                letterSpacing: '0.02em',
-              }}
-              onMouseEnter={(e) => (e.target.style.color = 'var(--accent-primary)')}
-              onMouseLeave={(e) => (e.target.style.color = 'var(--text-primary)')}
-            >
-              {item.label}
-            </button>
-          ))}
+          {NAV_ITEMS.map((item, i) => {
+            const active = isActive(item);
+            return (
+              <button
+                key={item.label}
+                onClick={() => handleNavClick(item)}
+                className="text-2xl font-bold no-underline transition-all duration-300 bg-transparent border-none cursor-pointer relative"
+                style={{
+                  color: mobileOpen
+                    ? active
+                      ? 'var(--accent-primary)'
+                      : 'var(--text-primary)'
+                    : 'transparent',
+                  opacity: mobileOpen ? 1 : 0,
+                  transform: mobileOpen ? 'translateY(0)' : 'translateY(20px)',
+                  transition: `all 0.4s ease ${0.1 + i * 0.05}s`,
+                  letterSpacing: '0.02em',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) e.target.style.color = 'var(--accent-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) e.target.style.color = 'var(--text-primary)';
+                }}
+              >
+                {item.label}
+                {active && (
+                  <div
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+                    style={{
+                      width: 4,
+                      height: 4,
+                      background: 'var(--accent-primary)',
+                      boxShadow: '0 0 6px var(--accent-primary)',
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
 
           <button
             onClick={handleGetStarted}

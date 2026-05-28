@@ -7,7 +7,6 @@ function PlanCard({ plan, index }) {
   return (
     <div
       ref={ref}
-      id={index === 1 ? 'pricing' : undefined}
       className="card-hover rounded-2xl p-9 md:p-10 relative flex flex-col overflow-hidden"
       style={{
         opacity: isVisible ? 1 : 0,
@@ -117,7 +116,7 @@ export default function SignalsPricing() {
   const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1 });
 
   return (
-    <section id="signals-pricing" className="section relative overflow-hidden">
+    <section id="pricing" className="section relative overflow-hidden">
       <div
         className="glow pointer-events-none"
         style={{
@@ -180,7 +179,7 @@ export default function SignalsPricing() {
           className="grid gap-7"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', alignItems: 'start' }}
         >
-          {PLANS.map((plan, i) => (
+          {SIGNAL_PLANS.map((plan, i) => (
             <PlanCard key={plan.name} plan={plan} index={i} />
           ))}
         </div>

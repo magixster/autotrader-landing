@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sachinn.github.io/autotrader-landing/sitemap.xml

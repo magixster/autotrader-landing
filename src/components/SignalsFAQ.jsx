@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
 import { FAQ_ITEMS } from '../data/signalsFAQ';
 
-function FAQItem({ item, index, isOpen, onToggle }) {
+function FAQItem({ item, index, isOpen, onToggle, onKeyNav, buttonRef }) {
   const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1, staggerDelay: 60, index });
 
   return (
@@ -19,7 +19,9 @@ function FAQItem({ item, index, isOpen, onToggle }) {
       }}
     >
       <button
+        ref={buttonRef}
         onClick={onToggle}
+        onKeyDown={(e) => onKeyNav(e, index)}
         className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left cursor-pointer bg-transparent border-none"
         style={{ color: 'var(--text-primary)' }}
         onMouseEnter={(e) => {
@@ -64,9 +66,40 @@ function FAQItem({ item, index, isOpen, onToggle }) {
 export default function SignalsFAQ() {
   const [openIndex, setOpenIndex] = useState(null);
   const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.05 });
+  const buttonRefs = useRef({});
 
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const handleKeyNav = (e, index) => {
+    const count = FAQ_ITEMS.length;
+    let nextIndex = null;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        nextIndex = (index + 1) % count;
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        nextIndex = (index - 1 + count) % count;
+        break;
+      case 'Home':
+        e.preventDefault();
+        nextIndex = 0;
+        break;
+      case 'End':
+        e.preventDefault();
+        nextIndex = count - 1;
+        break;
+      default:
+        return;
+    }
+
+    // Focus the next button
+    const targetButton = buttonRefs.current[nextIndex];
+    if (targetButton) targetButton.focus();
   };
 
   return (
@@ -122,6 +155,8 @@ export default function SignalsFAQ() {
               index={i}
               isOpen={openIndex === i}
               onToggle={() => toggle(i)}
+              onKeyNav={handleKeyNav}
+              buttonRef={(el) => (buttonRefs.current[i] = el)}
             />
           ))}
         </div>

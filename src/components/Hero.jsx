@@ -185,9 +185,12 @@ export default function Hero() {
 
             {/* CTA */}
             <div className="animate-fade-in-up flex flex-wrap gap-4" style={{ animationDelay: '0.25s' }}>
-              <a
-                href="#features"
-                className="btn !rounded-full !px-7 !py-3.5 !text-sm !font-extrabold uppercase tracking-wider gap-3"
+              <button
+                onClick={() => {
+                  const el = document.getElementById('products');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn !rounded-full !px-7 !py-3.5 !text-sm !font-extrabold uppercase tracking-wider gap-3 cursor-pointer border-none"
                 style={{
                   background: 'var(--accent-primary)',
                   color: '#070b0a',
@@ -202,9 +205,9 @@ export default function Hero() {
                   e.currentTarget.style.boxShadow = '0 4px 24px rgba(94, 210, 156, 0.25)';
                 }}
               >
-                Get Started
+                Our Products
                 <ArrowRight size={18} strokeWidth={2.5} />
-              </a>
+              </button>
               <a
                 href="https://github.com/sachinn/autotrader-landing"
                 target="_blank"

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Bell, TrendingUp, AlertTriangle } from 'lucide-react';
 import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
 
@@ -133,18 +133,48 @@ function PriceLevel({ label, value, color }) {
 
 export default function SignalPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1 });
+  const containerRef = useRef(null);
 
   // Auto-cycle through signals
   useEffect(() => {
+    if (paused) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % SAMPLE_SIGNALS.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [paused]);
+
+  // Keyboard navigation
+  const handleKeyDown = (e) => {
+    const count = SAMPLE_SIGNALS.length;
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        setActiveIndex((prev) => (prev + 1) % count);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        setActiveIndex((prev) => (prev - 1 + count) % count);
+        break;
+      case ' ':
+        e.preventDefault();
+        setPaused((p) => !p);
+        break;
+    }
+  };
 
   return (
-    <section className="section relative overflow-hidden">
+    <section
+      className="section relative overflow-hidden"
+      ref={containerRef}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      aria-label="Signal preview carousel. Use arrow keys to navigate, space to pause."
+    >
       <div
         className="glow pointer-events-none"
         style={{
@@ -212,7 +242,7 @@ export default function SignalPreview() {
           </div>
 
           {/* Auto-cycling indicator */}
-          <div className="flex justify-center gap-1.5 mt-5">
+          <div className="flex items-center justify-center gap-1.5 mt-5">
             {SAMPLE_SIGNALS.map((_, i) => (
               <button
                 key={i}
@@ -226,10 +256,33 @@ export default function SignalPreview() {
                 aria-label={`Show signal ${i + 1}`}
               />
             ))}
+
+            {/* Pause/play indicator */}
+            <button
+              onClick={() => setPaused((p) => !p)}
+              className="ml-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold transition-all duration-300 cursor-pointer border-none"
+              aria-label={paused ? 'Resume auto-cycle' : 'Pause auto-cycle'}
+              style={{
+                color: paused ? '#4facfe' : 'var(--text-muted)',
+                background: paused ? 'rgba(79, 172, 254, 0.1)' : 'var(--bg-card)',
+              }}
+            >
+              {paused ? (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16" />
+                  <rect x="14" y="4" width="4" height="16" />
+                </svg>
+              )}
+              {paused ? 'Play' : 'Pause'}
+            </button>
           </div>
 
           <p className="text-center text-xs mt-4" style={{ color: 'var(--text-muted)' }}>
-            Sample signal preview · Signals auto-cycle every 4 seconds
+            Use arrow keys to navigate · Space to {paused ? 'resume' : 'pause'} auto-cycle
           </p>
         </div>
       </div>
