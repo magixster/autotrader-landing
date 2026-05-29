@@ -18,7 +18,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -28,11 +27,9 @@ export default function Navbar() {
     scrollToElement(sectionId);
   };
 
-  // Determine active page for nav indicator
   const isActive = (item) => {
     const path = location.pathname;
     if (item.route === '/') {
-      // For home sections, active when on home page
       return path === '/';
     }
     return path === item.route;
@@ -41,13 +38,11 @@ export default function Navbar() {
   const handleNavClick = (item) => {
     setMobileOpen(false);
 
-    // If the item has a different route, navigate to it
     if (item.route !== '/') {
       navigate(item.route);
       return;
     }
 
-    // Otherwise scroll to a section on the current page or navigate home first
     if (item.section) {
       if (location.pathname === '/') {
         scrollToSection(item.section);
@@ -76,21 +71,35 @@ export default function Navbar() {
           height: 'var(--navbar-height)',
           background: scrolled ? 'var(--bg-primary)' : 'transparent',
           backdropFilter: scrolled ? 'blur(20px) saturate(1.5)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(1.5)' : 'none',
           borderBottom: scrolled ? '1px solid var(--border-color)' : '1px solid transparent',
           transition: 'all 0.4s ease',
         }}
       >
         <div className="container h-full flex items-center justify-between">
-          {/* Minimalist Logo */}
+          {/* Logo with Live indicator */}
           <Link to="/" className="flex items-center gap-2.5 no-underline group">
             <div
-              className="flex items-center justify-center w-8 h-8 rounded-[8px] text-sm font-extrabold text-white transition-transform duration-300 group-hover:scale-105"
+              className="flex items-center justify-center w-8 h-8 rounded-[8px] text-sm font-extrabold text-white transition-transform duration-300 group-hover:scale-105 relative"
               style={{ background: 'var(--gradient-primary)' }}
             >
               A
             </div>
             <span className="text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
               <span style={{ color: 'var(--accent-primary)' }}>Auto</span>Trader
+            </span>
+            {/* Live dot indicator */}
+            <span
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+              style={{
+                color: '#5ed29c',
+                border: '1px solid rgba(94,210,156,0.2)',
+                background: 'rgba(94,210,156,0.08)',
+                fontFamily: 'var(--font-display)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5ed29c] animate-pulse-dot" />
+              LIVE
             </span>
           </Link>
 
@@ -114,7 +123,6 @@ export default function Navbar() {
                   }}
                 >
                   {item.label}
-                  {/* Active indicator dot */}
                   {active && (
                     <div
                       className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full transition-all duration-300"
@@ -133,7 +141,6 @@ export default function Navbar() {
 
           {/* Desktop Right */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Theme toggle */}
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 cursor-pointer"
@@ -246,7 +253,6 @@ export default function Navbar() {
           opacity: mobileOpen ? 1 : 0,
         }}
       >
-        {/* Close button at top-right of overlay */}
         <button
           onClick={() => setMobileOpen(false)}
           className="absolute top-5 right-5 flex items-center justify-center w-10 h-10 rounded-lg cursor-pointer transition-all duration-200 z-10"
@@ -328,7 +334,6 @@ export default function Navbar() {
             </svg>
           </button>
 
-          {/* Decorative glow in mobile menu */}
           <div
             className="absolute pointer-events-none"
             style={{

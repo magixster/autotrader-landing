@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, Activity } from 'lucide-react';
 import { HERO_STATS } from '../data/hero';
 
 /* ── Fullscreen Video Background ── */
@@ -7,12 +7,9 @@ function VideoBackground() {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    // Ensure video plays on load
     const video = videoRef.current;
     if (video) {
-      video.play().catch(() => {
-        // Autoplay blocked — will play on user interaction
-      });
+      video.play().catch(() => {});
     }
   }, []);
 
@@ -20,8 +17,8 @@ function VideoBackground() {
     <video
       ref={videoRef}
       className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
-      style={{ opacity: 0.5 }}
-      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_094440_a3592600-bd1e-49e5-9bce-a73662061d83.mp4"
+      style={{ opacity: 0.4 }}
+      src="https://d8jnt0lcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_094440_a3592600-bd1e-49e5-9bce-a73662061d83.mp4"
       autoPlay
       muted
       loop
@@ -31,64 +28,295 @@ function VideoBackground() {
   );
 }
 
-/* ── Grid Lines (25%, 50%, 75%) ── */
-function GridLines() {
-  return (
-    <div className="hidden lg:block absolute inset-0 pointer-events-none">
-      <div className="relative w-full h-full">
-        <div className="absolute top-0 bottom-0 left-[25%] w-px" style={{ background: 'var(--border-color)' }} />
-        <div className="absolute top-0 bottom-0 left-[50%] w-px" style={{ background: 'var(--border-color)' }} />
-        <div className="absolute top-0 bottom-0 left-[75%] w-px" style={{ background: 'var(--border-color)' }} />
-      </div>
-    </div>
-  );
-}
+/* ── Animated Candlestick Chart SVG ── */
+function AnimatedChart() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 300);
+    return () => clearTimeout(t);
+  }, []);
 
-/* ── Central SVG Glow Ellipse ── */
-function CentralGlow() {
+  // Candlestick data: [open, high, low, close]
+  const candles = [
+    [48, 55, 45, 52, true],   // up
+    [52, 58, 50, 56, true],   // up
+    [56, 59, 53, 54, false],  // down
+    [54, 57, 50, 52, false],  // down
+    [52, 56, 51, 55, true],   // up
+    [55, 62, 54, 60, true],   // up
+    [60, 63, 58, 59, false],  // down
+    [59, 64, 58, 63, true],   // up
+    [63, 68, 62, 66, true],   // up
+    [66, 69, 64, 65, false],  // down
+    [65, 67, 61, 62, false],  // down
+    [62, 66, 60, 65, true],   // up
+  ];
+
+  const candleW = 24;
+  const candleGap = 4;
+  const chartH = 120;
+  const chartW = candles.length * (candleW + candleGap);
+  const minP = 44, maxP = 70;
+  const normY = (p) => chartH - ((p - minP) / (maxP - minP)) * chartH;
+
   return (
-    <div className="absolute pointer-events-none" style={{ top: '15%', left: '50%', transform: 'translateX(-50%)', filter: 'blur(25px)', opacity: 0.5 }}>
-      <svg width="600" height="120" viewBox="0 0 600 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="300" cy="60" rx="300" ry="60" fill="url(#glowGradient)" />
-        <defs>
-          <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-            <stop offset="0%" stopColor="#5ed29c" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="#4facfe" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#5ed29c" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+    <div className="w-full h-full absolute inset-0 flex items-center justify-center pointer-events-none">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox={`0 0 ${chartW + 40} ${chartH + 20}`}
+        className="opacity-30"
+        style={{ maxWidth: 360, maxHeight: 160 }}
+      >
+        {/* Grid lines */}
+        {[0, 0.25, 0.5, 0.75, 1].map((r) => (
+          <line
+            key={r}
+            x1="0" y1={chartH * (1 - r) + 10}
+            x2={chartW + 20} y2={chartH * (1 - r) + 10}
+            stroke="rgba(255,255,255,0.04)"
+            strokeWidth="0.5"
+          />
+        ))}
+
+        {/* Moving average line */}
+        <polyline
+          points={candles.map((c, i) => {
+            const x = 10 + i * (candleW + candleGap) + candleW / 2;
+            const y = normY(c[3]) + 10;
+            return `${x},${y}`;
+          }).join(' ')}
+          fill="none"
+          stroke="rgba(94, 210, 156, 0.4)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={mounted ? 'animate-chart-line' : ''}
+        />
+
+        {/* Candles */}
+        {candles.map((c, i) => {
+          const x = 10 + i * (candleW + candleGap);
+          const isUp = c[4];
+          const color = isUp ? '#5ed29c' : '#ef4444';
+          const open = c[0], high = c[1], low = c[2], close = c[3];
+          const openY = normY(open) + 10;
+          const closeY = normY(close) + 10;
+          const highY = normY(high) + 10;
+          const lowY = normY(low) + 10;
+          const bodyH = Math.max(Math.abs(closeY - openY), 1);
+          const bodyTop = Math.min(openY, closeY);
+          const delay = 0.1 + i * 0.08;
+
+          return (
+            <g key={i} className={mounted ? (isUp ? 'animate-candle-rise' : 'animate-candle-fall') : ''} style={{ animationDelay: `${delay}s` }}>
+              {/* Wick */}
+              <line
+                x1={x + candleW / 2} y1={highY}
+                x2={x + candleW / 2} y2={lowY}
+                stroke={color}
+                strokeWidth="1"
+                strokeLinecap="round"
+              />
+              {/* Body */}
+              <rect
+                x={x + 2} y={bodyTop}
+                width={candleW - 4} height={bodyH}
+                rx="1"
+                fill={color}
+                opacity="0.8"
+              />
+            </g>
+          );
+        })}
+
+        {/* Current price label */}
+        <text
+          x={chartW - 5} y={normY(candles[candles.length - 1][3]) + 6}
+          fill="#5ed29c"
+          fontSize="9"
+          fontFamily="'JetBrains Mono', monospace"
+          textAnchor="end"
+          opacity="0.6"
+        >
+          65.42
+        </text>
       </svg>
     </div>
   );
 }
 
-/* ── Liquid Glass Card ── */
-function GlassCard() {
+/* ── Floating Trading Data Card ── */
+function TradingDataCard() {
   return (
-    <div
-      className="animate-fade-in-up"
-      style={{ animationDelay: '0.05s', animationDuration: '0.6s' }}
-    >
+    <div className="animate-fade-in-up" style={{ animationDelay: '0.3s', animationDuration: '0.8s' }}>
       <div
-        className="liquid-glass w-[200px] h-[200px] md:w-[220px] md:h-[220px] rounded-2xl p-5 md:p-6 flex flex-col justify-between translate-y-[-50px]"
-        style={{ backdropFilter: 'blur(4px)' }}
+        className="liquid-glass w-[240px] md:w-[270px] rounded-2xl p-5 md:p-6"
+        style={{ backdropFilter: 'blur(8px)' }}
       >
-        <div className="text-[11px] font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>
-          [ 2025 ]
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-display)' }}>
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5ed29c] animate-pulse-dot mr-1.5" />
+            LIVE SIGNAL
+          </span>
+          <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+            +0.47%
+          </span>
         </div>
-        <div>
-          <div className="text-base md:text-lg font-bold leading-tight mb-1.5" style={{ color: 'var(--text-primary)' }}>
-            Taught by{' '}
-            <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--accent-primary)' }}>
-              Industry
-            </span>{' '}
-            Professionals
+
+        <div className="mb-3">
+          <div className="flex items-baseline justify-between">
+            <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>EURUSD</span>
+            <span className="text-lg font-black font-mono" style={{ color: '#5ed29c' }}>1.0876</span>
           </div>
-          <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-            Build production-ready trading systems used by real traders.
+          <div className="flex justify-between text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+            <span>Bid: 1.0874</span>
+            <span>Ask: 1.0878</span>
+          </div>
+        </div>
+
+        <div className="h-px w-full mb-3" style={{ background: 'var(--border-color)' }} />
+
+        <div className="grid grid-cols-2 gap-2 text-[11px]">
+          <div>
+            <div style={{ color: 'var(--text-muted)' }}>Signal</div>
+            <div style={{ color: '#5ed29c' }} className="font-bold">BUY</div>
+          </div>
+          <div>
+            <div style={{ color: 'var(--text-muted)' }}>Confidence</div>
+            <div style={{ color: '#4facfe' }} className="font-bold">87%</div>
+          </div>
+          <div>
+            <div style={{ color: 'var(--text-muted)' }}>Entry Zone</div>
+            <div className="font-mono font-bold" style={{ color: 'var(--text-primary)' }}>1.0860-90</div>
+          </div>
+          <div>
+            <div style={{ color: 'var(--text-muted)' }}>Risk</div>
+            <div className="font-bold" style={{ color: '#f59e0b' }}>0.5%</div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Mini Stats Card ── */
+function StatsCard() {
+  return (
+    <div className="animate-fade-in-up" style={{ animationDelay: '0.5s', animationDuration: '0.8s' }}>
+      <div
+        className="liquid-glass w-[200px] md:w-[220px] rounded-2xl p-4 md:p-5"
+        style={{ backdropFilter: 'blur(8px)' }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Activity size={12} style={{ color: '#4facfe' }} />
+          <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-display)' }}>
+            SYSTEM HEALTH
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Uptime</span>
+            <span className="text-[11px] font-bold font-mono" style={{ color: '#5ed29c' }}>99.97%</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Latency</span>
+            <span className="text-[11px] font-bold font-mono" style={{ color: '#f59e0b' }}>12ms</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Trades Today</span>
+            <span className="text-[11px] font-bold font-mono" style={{ color: 'var(--text-primary)' }}>24</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Win Rate</span>
+            <span className="text-[11px] font-bold font-mono" style={{ color: '#5ed29c' }}>68.4%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Count-Up Stats ── */
+function CountUpStats() {
+  const [counts, setCounts] = useState({});
+  const ref = useRef(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [hasAnimated]);
+
+  useEffect(() => {
+    if (!hasAnimated) return;
+
+    const targets = {
+      '29': 29,
+      '7': 7,
+      '63%': 63,
+      '4.2': 42,
+      '2.55': 255,
+    };
+
+    const intervals = {};
+    Object.entries(targets).forEach(([key, target]) => {
+      intervals[key] = setInterval(() => {
+        setCounts(prev => {
+          const current = prev[key] || 0;
+          const step = Math.max(1, Math.floor(target / 30));
+          const next = Math.min(current + step, target);
+          if (next >= target) {
+            clearInterval(intervals[key]);
+          }
+          return { ...prev, [key]: next };
+        });
+      }, 40);
+    });
+
+    return () => Object.values(intervals).forEach(clearInterval);
+  }, [hasAnimated]);
+
+  const formatStat = (stat) => {
+    if (stat.label === 'Win Rate') {
+      return `${counts['63%'] || 0}%`;
+    }
+    if (stat.label === 'Sharpe') {
+      return (counts['4.2'] / 10 || 0).toFixed(1);
+    }
+    if (stat.label === 'Months Live') {
+      return counts['29'] || 0;
+    }
+    if (stat.label === 'Assets Tracked') {
+      return counts['7'] || 0;
+    }
+    if (stat.label === 'Profit Factor') {
+      return (counts['2.55'] / 100 || 0).toFixed(2);
+    }
+    return stat.value;
+  };
+
+  return (
+    <div ref={ref} className="animate-fade-in-up flex flex-wrap gap-x-10 gap-y-3 mt-14" style={{ animationDelay: '0.35s' }}>
+      {HERO_STATS.map((stat) => (
+        <div key={stat.label}>
+          <div className="text-xl md:text-2xl font-black tracking-tight font-mono" style={{ color: 'var(--accent-primary)' }}>
+            {hasAnimated ? formatStat(stat) : '0'}
+          </div>
+          <div className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            {stat.label}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -103,12 +331,40 @@ export default function Hero() {
     >
       {/* Background layers */}
       <VideoBackground />
+      <div className="noise-overlay" />
+      <div className="gradient-mesh" />
       <div className="absolute inset-0" style={{
         background: 'linear-gradient(135deg, var(--bg-primary) 40%, transparent 70%), linear-gradient(to top, var(--bg-primary) 0%, transparent 40%)',
       }} />
       <div className="grid-bg absolute inset-0" />
-      <GridLines />
-      <CentralGlow />
+
+      {/* Grid Lines */}
+      <div className="hidden lg:block absolute inset-0 pointer-events-none">
+        <div className="relative w-full h-full">
+          <div className="absolute top-0 bottom-0 left-[25%] w-px" style={{ background: 'var(--border-color)' }} />
+          <div className="absolute top-0 bottom-0 left-[50%] w-px" style={{ background: 'var(--border-color)' }} />
+          <div className="absolute top-0 bottom-0 left-[75%] w-px" style={{ background: 'var(--border-color)' }} />
+        </div>
+      </div>
+
+      {/* Animated Chart Background */}
+      <div className="absolute right-0 top-[15%] w-[400px] h-[200px] hidden lg:block">
+        <AnimatedChart />
+      </div>
+
+      {/* Central SVG Glow Ellipse */}
+      <div className="absolute pointer-events-none" style={{ top: '15%', left: '50%', transform: 'translateX(-50%)', filter: 'blur(25px)', opacity: 0.5 }}>
+        <svg width="600" height="120" viewBox="0 0 600 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="300" cy="60" rx="300" ry="60" fill="url(#glowGradient)" />
+          <defs>
+            <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+              <stop offset="0%" stopColor="#5ed29c" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#4facfe" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#5ed29c" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
 
       {/* Bottom gradient fade */}
       <div
@@ -142,7 +398,7 @@ export default function Hero() {
                 }}
               >
                 <span
-                  className="w-1.5 h-1.5 rounded-full"
+                  className="w-1.5 h-1.5 rounded-full animate-pulse-dot"
                   style={{ background: 'var(--accent-primary)' }}
                 />
                 Career-Ready Curriculum
@@ -234,24 +490,14 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* Stats */}
-            <div className="animate-fade-in-up flex flex-wrap gap-x-10 gap-y-3 mt-14" style={{ animationDelay: '0.35s' }}>
-              {HERO_STATS.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-xl md:text-2xl font-black tracking-tight" style={{ color: 'var(--accent-primary)' }}>
-                    {stat.value}
-                  </div>
-                  <div className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Count-Up Stats */}
+            <CountUpStats />
           </div>
 
-          {/* Right: Glass Card */}
-          <div className="hidden lg:flex flex-shrink-0 mt-20">
-            <GlassCard />
+          {/* Right: Trading Data Cards */}
+          <div className="hidden lg:flex flex-col gap-6 mt-20">
+            <TradingDataCard />
+            <StatsCard />
           </div>
         </div>
       </div>

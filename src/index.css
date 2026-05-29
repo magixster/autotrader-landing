@@ -21,6 +21,8 @@
     --text-muted: #5a6b78;
     --accent-primary: #5ed29c;
     --accent-secondary: #4facfe;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
     --accent-glow: rgba(94, 210, 156, 0.15);
     --gradient-primary: linear-gradient(135deg, #5ed29c, #4facfe);
     --gradient-hero: linear-gradient(135deg, #070b0a 0%, #0a0f0e 50%, #070b0a 100%);
@@ -49,6 +51,8 @@
     --text-muted: #7a8f85;
     --accent-primary: #2d8f64;
     --accent-secondary: #3b82f6;
+    --accent-amber: #d97706;
+    --accent-red: #dc2626;
     --accent-glow: rgba(45, 143, 100, 0.1);
     --gradient-primary: linear-gradient(135deg, #2d8f64, #3b82f6);
     --gradient-hero: linear-gradient(135deg, #eae6de 0%, #e0dcd4 50%, #eae6de 100%);
@@ -151,6 +155,74 @@
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;
+  }
+
+  /* ── Gradient Mesh Background ── */
+  .gradient-mesh {
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(94, 210, 156, 0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(79, 172, 254, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 40%, rgba(94, 210, 156, 0.07) 0%, transparent 50%);
+    animation: gradient-shift 20s ease-in-out infinite alternate;
+    filter: blur(60px);
+  }
+
+  @keyframes gradient-shift {
+    0% { transform: translate(0%, 0%) rotate(0deg); }
+    25% { transform: translate(3%, -3%) rotate(1deg); }
+    50% { transform: translate(-3%, 3%) rotate(-1deg); }
+    75% { transform: translate(2%, -2%) rotate(0.5deg); }
+    100% { transform: translate(0%, 0%) rotate(0deg); }
+  }
+
+  /* ── Noise Texture Overlay ── */
+  .noise-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* ── Candlestick Chart Animations ── */
+  @keyframes candle-rise {
+    0% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
+    60% { transform: scaleY(1.05); opacity: 1; transform-origin: bottom; }
+    100% { transform: scaleY(1); opacity: 1; transform-origin: bottom; }
+  }
+  .animate-candle-rise { animation: candle-rise 0.6s ease-out forwards; }
+
+  @keyframes candle-fall {
+    0% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
+    60% { transform: scaleY(1.05); opacity: 1; transform-origin: bottom; }
+    100% { transform: scaleY(1); opacity: 1; transform-origin: bottom; }
+  }
+  .animate-candle-fall { animation: candle-fall 0.6s ease-out forwards; }
+
+  @keyframes chart-line-draw {
+    0% { stroke-dashoffset: 1000; }
+    100% { stroke-dashoffset: 0; }
+  }
+  .animate-chart-line {
+    stroke-dasharray: 1000;
+    animation: chart-line-draw 2s ease-out forwards;
+  }
+
+  /* ── Radar Sweep ── */
+  @keyframes radar-sweep {
+    0% { transform: rotate(0deg); opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { transform: rotate(360deg); opacity: 0.8; }
+  }
+  .animate-radar {
+    animation: radar-sweep 4s linear infinite;
+    transform-origin: center;
   }
 
   /* ── Grid Lines ── */
@@ -262,6 +334,25 @@
     transform: translateY(-4px);
     background: var(--bg-card-hover);
     border-color: var(--border-accent);
+  }
+
+  /* ── Trading Stats Counter ── */
+  @keyframes count-up {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-count-up {
+    animation: count-up 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* ── Pulse Dot (Live indicator) ── */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .animate-pulse-dot {
+    animation: pulse-dot 1.5s ease-in-out infinite;
   }
 }
 
