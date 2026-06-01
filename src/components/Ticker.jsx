@@ -1,65 +1,95 @@
-import { useEffect, useState } from 'react';
-import { TICKER_ITEMS } from '../data/ticker';
+import { useEffect, useRef } from 'react';
 
-function TickerItem({ item }) {
-  const isUp = item.change.startsWith('+');
-  const color = isUp ? '#00d4aa' : '#ef4444';
-
-  return (
-    <span className="inline-flex items-center gap-2.5 px-5 py-1.5 border-r whitespace-nowrap font-mono text-xs md:text-sm" style={{ borderColor: 'var(--border-color)' }}>
-      <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{item.pair}</span>
-      <span style={{ color: 'var(--text-muted)' }}>{item.bid}</span>
-      <span
-        className="inline-flex items-center gap-1 font-medium tabular-nums"
-        style={{ color }}
-      >
-        <svg
-          width="7"
-          height="7"
-          viewBox="0 0 7 7"
-          fill="currentColor"
-          className={isUp ? '' : 'rotate-180'}
-        >
-          <path d="M3.5 0l3.5 5.5H0z" />
-        </svg>
-        {item.change}
-      </span>
-      <span className="text-[10px] font-medium tabular-nums" style={{ color: isUp ? 'rgba(0,212,170,0.5)' : 'rgba(239,68,68,0.5)' }}>
-        {isUp ? '▲' : '▼'} {item.volume || '2.4K'}
-      </span>
-    </span>
-  );
-}
+const TICKER_ITEMS = [
+  { symbol: 'EUR/USD', price: '1.0876', change: '+0.02%' },
+  { symbol: 'GBP/USD', price: '1.2742', change: '-0.08%' },
+  { symbol: 'USD/JPY', price: '151.234', change: '+0.15%' },
+  { symbol: 'XAU/USD', price: '2,358.4', change: '+0.32%' },
+  { symbol: 'BTC/USD', price: '68,421', change: '+1.24%' },
+  { symbol: 'S&P 500', price: '5,289.4', change: '+0.18%' },
+  { symbol: 'NASDAQ', price: '16,742', change: '+0.45%' },
+  { symbol: 'VIX', price: '13.24', change: '-2.15%' },
+  { symbol: 'US 10Y', price: '4.32%', change: '-0.03%' },
+  { symbol: 'OIL/USD', price: '79.84', change: '+0.67%' },
+];
 
 export default function Ticker() {
-  const [mounted, setMounted] = useState(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    setMounted(true);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = scrollRef.current?.querySelectorAll('.scroll-reveal');
+    elements?.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
   }, []);
 
-  if (!mounted) return null;
+  const renderItems = () =>
+    [...Array(2)].flatMap(() =>
+      TICKER_ITEMS.map((item, i) => (
+        <div
+          key={`${item.symbol}-${i}`}
+          className="inline-flex items-center gap-3 mx-6"
+        >
+          <span className="font-display font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+            {item.symbol}
+          </span>
+          <span className="font-body text-sm" style={{ color: 'var(--text-secondary)' }}>
+            {item.price}
+          </span>
+          <span
+            className={`font-body text-xs font-medium ${
+              item.change.startsWith('+') ? '' : ''
+            }`}
+            style={{
+              color: item.change.startsWith('+')
+                ? 'var(--accent-teal)'
+                : 'var(--accent-red, #ef4444)',
+            }}
+          >
+            {item.change}
+          </span>
+        </div>
+      ))
+    );
 
   return (
-    <div
-      className="fixed top-[var(--navbar-height)] left-0 right-0 z-40 overflow-hidden border-b"
-      style={{
-        background: 'color-mix(in srgb, var(--bg-primary) 95%, transparent)',
-        backdropFilter: 'blur(20px) saturate(1.5)',
-        WebkitBackdropFilter: 'blur(20px) saturate(1.5)',
-        borderColor: 'var(--border-color)',
-      }}
-    >
-      <div className="flex ticker-gradient-mask">
-        <div className="flex animate-ticker" style={{ animationDuration: '35s' }}>
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <TickerItem key={`${item.pair}-${i}`} item={item} />
-          ))}
-        </div>
-        <div className="flex animate-ticker" style={{ animationDuration: '35s' }}>
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <TickerItem key={`dup-${item.pair}-${i}`} item={item} />
-          ))}
+    <div className="relative py-6" ref={scrollRef}>
+      {/* Inset divider lines */}
+      <div
+        className="absolute top-0 left-0 right-0"
+        style={{
+          height: 1,
+          boxShadow: '0 1px 0 rgba(255,255,255,0.5), 0 -1px 0 rgb(163,177,198,0.3)',
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-0 right-0"
+        style={{
+          height: 1,
+          boxShadow: '0 -1px 0 rgba(255,255,255,0.5), 0 1px 0 rgb(163,177,198,0.3)',
+        }}
+      />
+
+      <div className="ticker-gradient-mask overflow-hidden">
+        <div
+          className="animate-ticker whitespace-nowrap"
+          style={{
+            display: 'inline-flex',
+            animation: 'tickerScroll 40s linear infinite',
+          }}
+        >
+          {renderItems()}
         </div>
       </div>
     </div>

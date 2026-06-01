@@ -1,117 +1,94 @@
-import SignalsHero from '../components/SignalsHero';
-import SignalsFlow from '../components/SignalsFlow';
-import SignalPreview from '../components/SignalPreview';
-import SignalsPricing from '../components/SignalsPricing';
-import SignalsFAQ from '../components/SignalsFAQ';
-import Layout from '../components/Layout';
-import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 
-function SignalsCTA() {
-  const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1 });
+const FEATURES = [
+  {
+    title: 'Server-Side Execution',
+    desc: 'Run your Pine Script strategies on our servers. No need to keep TradingView open or your computer running.',
+  },
+  {
+    title: 'Multi-Timeframe',
+    desc: 'Analyze signals across different timeframes simultaneously for more robust trade decisions.',
+  },
+  {
+    title: 'Backtesting Engine',
+    desc: 'Test strategies against historical data with detailed performance reports before going live.',
+  },
+  {
+    title: 'Strategy Optimization',
+    desc: 'Automatically find optimal parameters for your strategies using genetic algorithm optimization.',
+  },
+];
+
+export default function PineSignalsPage() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const els = sectionRef.current?.querySelectorAll('.scroll-reveal');
+    els?.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section className="relative overflow-hidden py-20 md:py-24" style={{ background: 'var(--bg-secondary)' }}>
-      <div
-        className="glow pointer-events-none"
-        style={{
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(79, 172, 254, 0.06), transparent)',
-          top: '20%',
-          right: -200,
-          filter: 'blur(80px)',
-        }}
-      />
-
-      <div className="container" ref={ref}>
-        <div
-          className="max-w-[640px] mx-auto p-10 md:p-12 rounded-3xl relative overflow-hidden text-center"
-          style={{
-            border: '1px solid var(--border-accent)',
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'translateY(0)' : 'translateY(24px)',
-            transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
-          }}
-        >
-          <div
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              top: -100,
-              right: -100,
-              width: 300,
-              height: 300,
-              background: 'radial-gradient(circle, rgba(79, 172, 254, 0.07), transparent)',
-              filter: 'blur(60px)',
-            }}
-          />
-
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-3 relative" style={{ color: 'var(--text-primary)' }}>
-            Start Receiving Signals Today
-          </h2>
-          <p className="text-base md:text-lg mb-8 relative" style={{ color: 'var(--text-secondary)' }}>
-            No setup. No code. No commitment. Cancel anytime.
-            Get your first 7 days free on any plan.
+    <section className="section pb-32" ref={sectionRef}>
+      <div className="container">
+        <div className="text-center mb-16 scroll-reveal">
+          <div className="section-label mx-auto mb-5 w-fit">Pine Signal Runner</div>
+          <h2 className="section-title">Run Pine Scripts Server-Side</h2>
+          <p className="section-subtitle mx-auto mt-4">
+            Execute and manage your TradingView strategies without keeping a browser tab open.
           </p>
 
-          <div className="flex flex-wrap gap-4 justify-center relative">
-            <Link
-              to="/pine-signals#pricing"
-              className="btn !rounded-full !px-7 !py-3.5 !text-sm !font-bold gap-2"
-              style={{
-                background: 'linear-gradient(135deg, #4facfe, #2563eb)',
-                color: '#fff',
-                boxShadow: '0 4px 24px rgba(79, 172, 254, 0.3)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(79, 172, 254, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 24px rgba(79, 172, 254, 0.3)';
-              }}
-            >
-              Choose Your Plan
-              <ArrowRight size={18} strokeWidth={2.5} />
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <Link to="/pricing" className="neumo-btn-primary !rounded-2xl !px-6 !py-3 !text-sm font-display font-bold">
+              Get Started
             </Link>
-            <Link
-              to="/"
-              className="btn !rounded-full !px-7 !py-3.5 !text-sm !font-semibold"
-              style={{
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-color)',
-                background: 'transparent',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.borderColor = 'var(--border-color)';
-              }}
-            >
-              Explore AutoTrader
-              <ArrowRight size={16} strokeWidth={2.5} />
-            </Link>
+            <a href="#features" className="neumo-btn !rounded-2xl !px-6 !py-3 !text-sm font-display font-bold"
+              style={{ background: 'var(--bg-primary)' }}>
+              Learn More
+            </a>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          {FEATURES.map((feat, i) => (
+            <div
+              key={feat.title}
+              className="neumo-card p-8 md:p-10 scroll-reveal"
+              style={{
+                animationDelay: `${i * 100}ms`,
+                background: 'var(--bg-primary)',
+              }}
+            >
+              <div
+                className="neumo-inset-deep w-12 h-12 flex items-center justify-center mb-5"
+                style={{
+                  background: 'var(--bg-primary)',
+                  color: 'var(--accent)',
+                  borderRadius: 16,
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              </div>
+              <h3 className="font-display font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>{feat.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{feat.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
-  );
-}
-
-export default function PineSignalsPage() {
-  return (
-    <Layout>
-      <SignalsHero />
-      <SignalPreview />
-      <SignalsFlow />
-      <SignalsPricing />
-      <SignalsFAQ />
-      <SignalsCTA />
-    </Layout>
   );
 }

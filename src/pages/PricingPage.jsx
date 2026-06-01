@@ -1,10 +1,11 @@
-import Layout from '../components/Layout';
 import PricingTable from '../components/PricingTable';
+import ContactForm from '../components/ContactForm';
 
 export default function PricingPage() {
   return (
-    <Layout>
+    <>
       <PricingTable />
-    </Layout>
+      <ContactForm />
+    </>
   );
 }

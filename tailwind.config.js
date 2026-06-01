@@ -8,88 +8,62 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body: ['"DM Sans"', 'sans-serif'],
       },
       colors: {
-        // Trading-themed palette via CSS variables for dark/light mode
-        surface: {
-          DEFAULT: 'var(--bg-primary)',
-          secondary: 'var(--bg-secondary)',
-          tertiary: 'var(--bg-tertiary)',
-          card: 'var(--bg-card)',
-          'card-hover': 'var(--bg-card-hover)',
-        },
-        border: {
-          DEFAULT: 'var(--border-color)',
-          accent: 'var(--border-accent)',
-        },
-        text: {
-          primary: 'var(--text-primary)',
-          secondary: 'var(--text-secondary)',
-          muted: 'var(--text-muted)',
-        },
-        accent: {
-          primary: 'var(--accent-primary)',
-          secondary: 'var(--accent-secondary)',
-          amber: 'var(--accent-amber)',
-          red: 'var(--accent-red)',
-        },
-        // Candlestick-inspired colors
-        candle: {
-          green: '#00d4aa',
-          red: '#ef4444',
-          volume: '#3b82f6',
-        },
+        'neumo-bg': '#E0E5EC',
+        'neumo-text': '#3D4852',
+        'neumo-muted': '#6B7280',
+        'neumo-accent': '#6C63FF',
+        'neumo-accent-light': '#8B84FF',
+        'neumo-teal': '#38B2AC',
       },
-      backgroundImage: {
-        'gradient-primary': 'var(--gradient-primary)',
-        'gradient-hero': 'var(--gradient-hero)',
+      borderRadius: {
+        'neumo': '32px',
+        'neumo-sm': '16px',
+        'neumo-xs': '12px',
       },
-      maxWidth: {
-        content: '1200px',
+      boxShadow: {
+        'extruded': '9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5)',
+        'extruded-hover': '12px 12px 20px rgb(163,177,198,0.7), -12px -12px 20px rgba(255,255,255,0.6)',
+        'extruded-sm': '5px 5px 10px rgb(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5)',
+        'inset': 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255,0.5)',
+        'inset-deep': 'inset 10px 10px 20px rgb(163,177,198,0.7), inset -10px -10px 20px rgba(255,255,255,0.6)',
+        'inset-sm': 'inset 3px 3px 6px rgb(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)',
       },
       animation: {
-        'ticker': 'ticker 30s linear infinite',
-        'ticker-mobile': 'ticker 20s linear infinite',
-        'pulse-slow': 'pulse 3s ease-in-out infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'spin-slow': 'spin 8s linear infinite',
-        'candle-up': 'candleUp 0.3s ease-out',
-        'candle-down': 'candleDown 0.3s ease-out',
-        'fade-in': 'fadeIn 0.6s ease-out forwards',
+        'float': 'float 3s ease-in-out infinite',
+        'fade-in-up': 'fadeInUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards',
         'slide-up': 'slideUp 0.6s ease-out forwards',
-        'grid-flow': 'gridFlow 20s linear infinite',
-        'shimmer': 'shimmer 3s ease-in-out infinite',
+        'ticker': 'tickerScroll 40s linear infinite',
+        'pulse-slow': 'pulseSlow 2s ease-in-out infinite',
+        'spin-slow': 'spinSlow 8s linear infinite',
       },
       keyframes: {
-        ticker: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-50%)' },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-8px)' },
         },
-        candleUp: {
-          '0%': { transform: 'scaleY(0)', opacity: '0' },
-          '100%': { transform: 'scaleY(1)', opacity: '1' },
-        },
-        candleDown: {
-          '0%': { transform: 'scaleY(0)', opacity: '0' },
-          '100%': { transform: 'scaleY(1)', opacity: '1' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         slideUp: {
           '0%': { opacity: '0', transform: 'translateY(30px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        gridFlow: {
-          '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(-60px)' },
+        tickerScroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
-        shimmer: {
-          '0%, 100%': { backgroundPosition: '200% 0' },
-          '50%': { backgroundPosition: '-200% 0' },
+        pulseSlow: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.4' },
+        },
+        spinSlow: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
         },
       },
     },

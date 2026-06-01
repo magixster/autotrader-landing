@@ -1,137 +1,99 @@
-import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
-import { STEPS } from '../data/howItWorks';
+import { useEffect, useRef } from 'react';
 
-function StepCard({ step, index }) {
-  const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.15, staggerDelay: 120, index });
-  const isRight = index % 2 === 1;
-
-  return (
-    <div
-      ref={ref}
-      className={`how-it-works-row relative flex flex-col ${isRight ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-8 md:gap-12`}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateX(0)' : `translateX(${isRight ? '30px' : '-30px'})`,
-        transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      {/* Step number */}
-      <div
-        className="flex-shrink-0 relative flex items-center justify-center"
-        style={{
-          width: 72,
-          height: 72,
-          borderRadius: '50%',
-          background: `linear-gradient(135deg, ${step.color}20, ${step.color}05)`,
-          border: `2px solid ${step.color}30`,
-          fontSize: '1.35rem',
-          fontWeight: 800,
-          color: step.color,
-          fontFamily: 'var(--font-mono)',
-        }}
-      >
-        {step.num}
-        <div
-          className="absolute animate-spin-slow"
-          style={{
-            inset: -4,
-            borderRadius: '50%',
-            border: `1px solid ${step.color}15`,
-          }}
-        />
-      </div>
-
-      {/* Content */}
-      <div
-        className="flex-1 rounded-2xl p-7 md:p-8"
-        style={{
-          background: 'var(--bg-card)',
-          border: `1px solid ${step.color}15`,
-          borderLeft: `3px solid ${step.color}`,
-        }}
-      >
-        <div
-          className="text-[11px] font-bold tracking-[0.15em] uppercase mb-1.5"
-          style={{ color: step.color, fontFamily: 'var(--font-display)' }}
-        >
-          {step.subtitle}
-        </div>
-        <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-          {step.title}
-        </h3>
-        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-          {step.description}
-        </p>
-      </div>
-    </div>
-  );
-}
+const STEPS = [
+  {
+    number: '01',
+    title: 'Write Your Strategy',
+    desc: 'Create a TradingView Pine Script strategy that sends webhook alerts on buy/sell signals.',
+  },
+  {
+    number: '02',
+    title: 'Configure Accounts',
+    desc: 'Connect your MT5 and Tradovate accounts. Set risk parameters, lot sizes, and symbol mappings.',
+  },
+  {
+    number: '03',
+    title: 'Deploy &amp; Monitor',
+    desc: 'Run the bot via Docker or CLI. Watch live trades execute across all your accounts in real time.',
+  },
+];
 
 export default function HowItWorks() {
-  const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1 });
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = sectionRef.current?.querySelectorAll('.scroll-reveal');
+    elements?.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="how-it-works" className="section relative overflow-hidden">
-      <div
-        className="glow pointer-events-none"
-        style={{
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(79, 172, 254, 0.06), transparent)',
-          top: '20%',
-          right: -200,
-          filter: 'blur(80px)',
-        }}
-      />
-
-      <div className="container" ref={ref}>
-        <div className="text-center mb-20">
-          <span
-            className="section-label"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transition: 'all 0.5s ease',
-            }}
-          >
-            Architecture
-          </span>
-          <h2
-            className="section-title"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transition: 'all 0.5s ease 0.1s',
-            }}
-          >
-            How It Works
-          </h2>
-          <p
-            className="section-subtitle mx-auto"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transition: 'all 0.5s ease 0.2s',
-            }}
-          >
-            From TradingView alert to filled order — the complete flow through the automation pipeline.
+    <section id="how-it-works" className="section" ref={sectionRef}>
+      <div className="container">
+        <div className="text-center mb-16 scroll-reveal">
+          <div className="section-label mx-auto mb-5 w-fit">How It Works</div>
+          <h2 className="section-title">Three Steps to Automate</h2>
+          <p className="section-subtitle mx-auto mt-4">
+            From Pine Script to live execution in minutes.
           </p>
         </div>
 
-        <div className="relative max-w-3xl mx-auto">
-          {/* Vertical connecting line (hidden on mobile) */}
-          <div
-            className="hidden md:block absolute top-0 bottom-0 left-[36px] md:left-1/2"
-            style={{
-              width: 2,
-              background: 'linear-gradient(180deg, #5ed29c, #4facfe, #f59e0b, #ef4444, #8b5cf6, #06b6d4)',
-              transform: 'translateX(-50%)',
-              opacity: 0.15,
-            }}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {STEPS.map((step, i) => (
+            <div
+              key={step.number}
+              className="scroll-reveal text-center relative"
+              style={{ animationDelay: `${i * 150}ms` }}
+            >
+              {/* Step number in neumorphic inset */}
+              <div
+                className="neumo-inset-deep w-20 h-20 flex items-center justify-center mx-auto mb-6"
+                style={{
+                  background: 'var(--bg-primary)',
+                  borderRadius: '9999px',
+                }}
+              >
+                <span
+                  className="font-display font-extrabold text-2xl"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  {step.number}
+                </span>
+              </div>
 
-          <div className="flex flex-col gap-10 md:gap-14">
-            {STEPS.map((step, i) => (
-              <StepCard key={step.num} step={step} index={i} />
-            ))}
-          </div>
+              {/* Connector line */}
+              {i < STEPS.length - 1 && (
+                <div
+                  className="hidden md:block absolute top-10 left-[60%] w-[calc(80%)] h-0.5"
+                  style={{
+                    background: 'var(--bg-primary)',
+                    boxShadow: '0 1px 0 rgba(255,255,255,0.5), 0 -1px 0 rgb(163,177,198,0.3)',
+                  }}
+                />
+              )}
+
+              <h3 className="font-display font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>
+                {step.title}
+              </h3>
+              <p
+                className="text-sm leading-relaxed max-w-xs mx-auto"
+                style={{ color: 'var(--text-secondary)' }}
+                dangerouslySetInnerHTML={{ __html: step.desc }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>

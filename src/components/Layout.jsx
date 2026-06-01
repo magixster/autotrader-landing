@@ -1,16 +1,15 @@
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import Ticker from './Ticker';
 import Footer from './Footer';
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
     <>
       <Navbar />
-      <Ticker />
-      <div className="pt-[calc(var(--navbar-height)+36px)]">
-        {children}
-        <Footer />
-      </div>
+      <main style={{ paddingTop: 'var(--navbar-height)' }}>
+        <Outlet />
+      </main>
+      <Footer />
     </>
   );
 }

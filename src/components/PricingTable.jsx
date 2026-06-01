@@ -1,207 +1,155 @@
-import useAnimateOnScroll from '../hooks/useAnimateOnScroll';
-import { PLANS } from '../data/pricing';
+import { Link } from 'react-router-dom';
 
-function PlanCard({ plan, index }) {
-  const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.15, staggerDelay: 100, index });
-
-  return (
-    <div
-      ref={ref}
-      className="card-hover rounded-2xl p-9 md:p-10 relative flex flex-col overflow-hidden"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-        transition: 'all 0.5s ease, opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      {/* Card background */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{
-          background: plan.featured
-            ? 'linear-gradient(135deg, rgba(0,212,170,0.06), rgba(59,130,246,0.04))'
-            : 'var(--bg-card)',
-          border: plan.featured ? '1px solid var(--border-accent)' : '1px solid var(--border-color)',
-        }}
-      />
-
-      {/* Featured badge */}
-      {plan.featured && (
-        <div
-          className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-wider uppercase"
-          style={{
-            background: 'var(--gradient-primary)',
-            color: '#070b0a',
-          }}
-        >
-          Most Popular
-        </div>
-      )}
-
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Plan header */}
-        <div className="mb-6">
-          <h3 className="text-xl font-extrabold mb-1" style={{ color: 'var(--text-primary)' }}>
-            {plan.name}
-          </h3>
-          <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>{plan.subtitle}</p>
-          <div className="flex items-baseline gap-1.5">
-            <span
-              className="text-4xl md:text-5xl font-black"
-              style={{
-                background: plan.gradient,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              {plan.price}
-            </span>
-            {plan.period && (
-              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{plan.period}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Features */}
-        <ul className="flex-1 space-y-1 mb-7">
-          {plan.features.map((feat) => (
-            <li
-              key={feat}
-              className="flex items-center gap-2.5 py-2 text-sm"
-              style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
-                <circle cx="12" cy="12" r="10" stroke="#00d4aa" strokeWidth="2" opacity="0.3" />
-                <path d="M8 12l3 3 5-5" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {feat}
-            </li>
-          ))}
-        </ul>
-
-        {/* CTA */}
-        <a
-          href={plan.href}
-          className="btn w-full justify-center py-3.5 text-sm font-bold rounded-full"
-          style={{
-            background: plan.featured ? 'var(--gradient-primary)' : 'transparent',
-            color: plan.featured ? '#070b0a' : 'var(--text-primary)',
-            border: plan.featured ? 'none' : '1px solid var(--border-color)',
-            boxShadow: plan.featured ? '0 4px 20px rgba(0, 212, 170, 0.25)' : 'none',
-          }}
-          onMouseEnter={(e) => {
-            if (!plan.featured) {
-              e.currentTarget.style.background = 'var(--bg-card)';
-              e.currentTarget.style.borderColor = 'var(--text-muted)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!plan.featured) {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.borderColor = 'var(--border-color)';
-            }
-          }}
-        >
-          {plan.cta}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  );
-}
+const TIERS = [
+  {
+    name: 'Starter',
+    price: '$49',
+    period: '/month',
+    desc: 'For individual traders getting started with automation.',
+    features: [
+      'Up to 2 accounts',
+      'MT5 or Tradovate',
+      'Basic risk management',
+      'Email support',
+      'Real-time P&L tracking',
+    ],
+    cta: 'Get Started',
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    price: '$149',
+    period: '/month',
+    desc: 'For serious traders with multi-account setups.',
+    features: [
+      'Up to 10 accounts',
+      'MT5 + Tradovate',
+      'Advanced risk management',
+      'Priority support',
+      'Performance analytics',
+      'Docker deployment',
+      'Custom symbol mapping',
+    ],
+    cta: 'Start Free Trial',
+    highlighted: true,
+  },
+  {
+    name: 'Enterprise',
+    price: '$499',
+    period: '/month',
+    desc: 'For prop firms and institutional traders.',
+    features: [
+      'Unlimited accounts',
+      'All platforms',
+      'Custom risk rules',
+      'Dedicated support',
+      'API access',
+      'On-premise deployment',
+      'SLA guarantee',
+      'White-label options',
+    ],
+    cta: 'Contact Sales',
+    highlighted: false,
+  },
+];
 
 export default function PricingTable() {
-  const { ref, isVisible } = useAnimateOnScroll({ threshold: 0.1 });
-
   return (
-    <section id="pricing" className="section relative overflow-hidden">
-      <div
-        className="glow pointer-events-none"
-        style={{
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(0,212,170,0.06), transparent)',
-          top: '10%',
-          left: -200,
-          filter: 'blur(80px)',
-        }}
-      />
-      <div
-        className="glow pointer-events-none"
-        style={{
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(79,172,254,0.05), transparent)',
-          bottom: '10%',
-          right: -200,
-          filter: 'blur(80px)',
-        }}
-      />
-
-      <div className="container" ref={ref}>
-        <div className="text-center mb-14 md:mb-16">
-          <span
-            className="section-label"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
-              transition: 'all 0.5s ease',
-            }}
-          >
-            Pricing
-          </span>
-          <h2
-            className="section-title"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
-              transition: 'all 0.5s ease 0.1s',
-            }}
-          >
-            Simple, Transparent Pricing
-          </h2>
-          <p
-            className="section-subtitle mx-auto"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
-              transition: 'all 0.5s ease 0.2s',
-            }}
-          >
-            Start free, scale as you grow. All plans include the core automation engine.
-            No hidden fees, no surprise charges.
+    <section className="section">
+      <div className="container">
+        <div className="text-center mb-16">
+          <div className="section-label mx-auto mb-5 w-fit">Pricing</div>
+          <h2 className="section-title">Simple, Transparent Pricing</h2>
+          <p className="section-subtitle mx-auto mt-4">
+            No hidden fees. No surprises. Scale your plan as you grow.
           </p>
         </div>
 
-        <div className="grid gap-7" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', alignItems: 'start' }}>
-          {PLANS.map((plan, i) => (
-            <PlanCard key={plan.name} plan={plan} index={i} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              className={`relative flex flex-col ${
+                tier.highlighted ? 'md:-mt-4 md:mb-4' : ''
+              }`}
+            >
+              <div
+                className="neumo-card p-8 md:p-10 flex flex-col h-full"
+                style={{
+                  background: 'var(--bg-primary)',
+                }}
+              >
+                {tier.highlighted && (
+                  <div
+                    className="section-label mx-auto mb-4 w-fit !text-[10px]"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'white',
+                      boxShadow: `
+                        inset 3px 3px 6px rgba(0,0,0,0.15),
+                        inset -3px -3px 6px rgba(255,255,255,0.15)
+                      `,
+                    }}
+                  >
+                    Most Popular
+                  </div>
+                )}
+
+                <h3 className="font-display font-bold text-lg mb-1" style={{ color: 'var(--text-primary)' }}>
+                  {tier.name}
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  {tier.desc}
+                </p>
+
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="font-display font-extrabold text-4xl" style={{ color: 'var(--text-primary)' }}>
+                    {tier.price}
+                  </span>
+                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                    {tier.period}
+                  </span>
+                </div>
+
+                <ul className="flex flex-col gap-3 mb-8 flex-1">
+                  {tier.features.map((feat) => (
+                    <li key={feat} className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ color: 'var(--accent-teal)', flexShrink: 0 }}
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  to="/pricing"
+                  className={`text-center !rounded-2xl !py-3 !text-sm font-display font-bold ${
+                    tier.highlighted
+                      ? 'neumo-btn-primary'
+                      : 'neumo-btn'
+                  }`}
+                  style={{
+                    background: tier.highlighted ? undefined : 'var(--bg-primary)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {tier.cta}
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
-
-        <p
-          className="text-center text-sm mt-10"
-          style={{
-            color: 'var(--text-muted)',
-            opacity: isVisible ? 1 : 0,
-            transition: 'all 0.5s ease 0.4s',
-          }}
-        >
-          All plans are open-source and self-hostable. Paid plans include premium support and hosted infrastructure.{' '}
-          <a
-            href="https://github.com/sachinn/autotrader-landing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-medium"
-            style={{ color: 'var(--accent-primary)' }}
-          >
-            View on GitHub
-          </a>
-        </p>
       </div>
     </section>
   );

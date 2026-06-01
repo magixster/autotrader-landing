@@ -1,16 +1,17 @@
-import Layout from '../components/Layout';
 import Hero from '../components/Hero';
-import Products from '../components/Products';
+import Ticker from '../components/Ticker';
+import Features from '../components/Features';
 import HowItWorks from '../components/HowItWorks';
-import ContactForm from '../components/ContactForm';
+import Products from '../components/Products';
 
 export default function HomePage() {
   return (
-    <Layout>
+    <>
       <Hero />
-      <Products />
+      <Ticker />
+      <Features />
       <HowItWorks />
-      <ContactForm />
-    </Layout>
+      <Products />
+    </>
   );
 }
