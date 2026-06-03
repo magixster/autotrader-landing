@@ -1,16 +1,70 @@
-# React + Vite
+# AutoTrader Landing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Multi-platform trading automation landing page. Built with React, Vite, and Tailwind CSS with a neumorphic design system.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** — UI framework
+- **Vite 8** — Build tool
+- **Tailwind CSS 3** — Utility-first CSS
+- **Firebase Firestore** — Contact form backend
+- **React Router 7** — Client-side routing
+- **Lucide React** — Icons
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Set up environment variables
+cp .env.example .env
+# Fill in your Firebase project keys in .env
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Start dev server
+npm run dev
+```
+
+## Scripts
+
+| Command             | Description                        |
+| ------------------- | ---------------------------------- |
+| `npm run dev`       | Start Vite dev server              |
+| `npm run build`     | Production build                   |
+| `npm run preview`   | Preview production build           |
+| `npm run lint`      | Run ESLint                         |
+| `npm run preview:prod` | Build + preview               |
+
+## Project Structure
+
+```
+src/
+├── main.jsx              # App entry point
+├── App.jsx               # Router + SPA redirect handler
+├── index.css             # Neumorphic design system (Tailwind)
+├── context/
+│   └── ThemeContext.jsx   # Dark/light mode
+├── lib/
+│   └── firebase.js       # Firebase client config
+├── components/
+│   ├── Navbar.jsx         # Top navigation
+│   ├── Hero.jsx           # Hero section with decorative elements
+│   ├── Ticker.jsx         # Live price ticker
+│   ├── Features.jsx       # Features grid
+│   ├── HowItWorks.jsx     # Steps section
+│   ├── Products.jsx       # Product cards
+│   ├── PricingTable.jsx   # Pricing tiers
+│   ├── ContactForm.jsx    # Firebase Firestore contact form
+│   ├── Footer.jsx         # Site footer
+│   └── Layout.jsx         # Shared layout (Navbar + Outlet + Footer)
+└── pages/
+    ├── HomePage.jsx       # Landng page
+    ├── PricingPage.jsx    # Pricing + contact
+    ├── PerformancePage.jsx# Live trading metrics
+    ├── PineSignalsPage.jsx# Pine Signal Runner info
+    └── NotFoundPage.jsx   # 404 page
+```
+
+## Deployment
+
+Deployed to GitHub Pages via the `.github/workflows/deploy.yml` workflow.

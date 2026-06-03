@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 
@@ -18,10 +18,15 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
-  // Close mobile nav on route change
+  // Close mobile nav on route change (handles browser back/forward)
+  const prevPathRef = useRef(location.pathname);
   useEffect(() => {
-    setMobileOpen(false);
-  }, [location]);
+    const pathChanged = prevPathRef.current !== location.pathname;
+    prevPathRef.current = location.pathname;
+    if (pathChanged && mobileOpen) {
+      setMobileOpen(false);
+    }
+  }, [location.pathname, mobileOpen]);
 
   // Track scroll position
   useEffect(() => {

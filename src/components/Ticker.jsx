@@ -34,34 +34,30 @@ export default function Ticker() {
     return () => observer.disconnect();
   }, []);
 
-  const renderItems = () =>
-    [...Array(2)].flatMap(() =>
-      TICKER_ITEMS.map((item, i) => (
-        <div
-          key={`${item.symbol}-${i}`}
-          className="inline-flex items-center gap-3 mx-6"
+  const renderItems = (copyIndex) =>
+    TICKER_ITEMS.map((item, i) => (
+      <div
+        key={`${item.symbol}-${copyIndex}-${i}`}
+        className="inline-flex items-center gap-3 mx-6"
+      >
+        <span className="font-display font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+          {item.symbol}
+        </span>
+        <span className="font-body text-sm" style={{ color: 'var(--text-secondary)' }}>
+          {item.price}
+        </span>
+        <span
+          className="font-body text-xs font-medium"
+          style={{
+            color: item.change.startsWith('+')
+              ? 'var(--accent-teal)'
+              : 'var(--accent-red)',
+          }}
         >
-          <span className="font-display font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            {item.symbol}
-          </span>
-          <span className="font-body text-sm" style={{ color: 'var(--text-secondary)' }}>
-            {item.price}
-          </span>
-          <span
-            className={`font-body text-xs font-medium ${
-              item.change.startsWith('+') ? '' : ''
-            }`}
-            style={{
-              color: item.change.startsWith('+')
-                ? 'var(--accent-teal)'
-                : 'var(--accent-red, #ef4444)',
-            }}
-          >
-            {item.change}
-          </span>
-        </div>
-      ))
-    );
+          {item.change}
+        </span>
+      </div>
+    ));
 
   return (
     <div className="relative py-6" ref={scrollRef}>
@@ -82,14 +78,9 @@ export default function Ticker() {
       />
 
       <div className="ticker-gradient-mask overflow-hidden">
-        <div
-          className="animate-ticker whitespace-nowrap"
-          style={{
-            display: 'inline-flex',
-            animation: 'tickerScroll 40s linear infinite',
-          }}
-        >
-          {renderItems()}
+        <div className="animate-ticker whitespace-nowrap" style={{ display: 'inline-flex' }}>
+          {renderItems(0)}
+          {renderItems(1)}
         </div>
       </div>
     </div>
